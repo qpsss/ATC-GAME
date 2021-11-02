@@ -6,8 +6,8 @@
 #include <ctype.h>
 #include <string>
 #include<string.h>
-#define screen_x 90
-#define screen_y 35
+#define screen_x 90 //85
+#define screen_y 35 //22
 #define dt 100
 bool play = true;
 unsigned int safe = 0;
@@ -37,7 +37,7 @@ void init_console()
 	fontStructure.dwFontSize.Y = newHeight;
 	wcscpy(fontStructure.FaceName, L"Consolas");
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetCurrentConsoleFontEx(hConsole, true, &fontStructure);*/
+	SetCurrentConsoleFontEx(hConsole, true, &fontStructure); */
 	console.wHnd = GetStdHandle(STD_OUTPUT_HANDLE);
 	console.rHnd = GetStdHandle(STD_INPUT_HANDLE);
 	SetConsoleWindowInfo(console.wHnd, TRUE, &console.windowSize);
@@ -200,7 +200,7 @@ void spawn_plane()
 	COORD dir = E_Point_Dir[point];
 	int dest;
 
-	int E_airport = randrange(0, 3);
+	int E_airport = 0; //randrange(0, 3);
 	if (E_airport != 0)
 	{
 		int dest_E = randrange(0, 7);
@@ -324,6 +324,7 @@ struct Item
 	bool active = false;
 };
 Item timeStopper;
+int freezedTime = 0;
 #define air_speed 5000
 #define jet_speed 2500
 int currentTime = 0;
@@ -383,8 +384,7 @@ void plane_update(Plane* plane)
 	if (plane->pos.X == timeStopper.pos.X && plane->pos.Y == timeStopper.pos.Y && timeStopper.active)
 	{
 		timeStopper.active = false;
-		draw_console("Time Stopped!", { 0, 22 }, 12);
-		Sleep(3000);
+		freezedTime = 7000;
 	}
 	isCollided();
 }
@@ -427,12 +427,15 @@ void plane_spawner()
 
 void dropItem()
 {
-	short posx = randrange(1, 28) * 2;
-	short posy = randrange(1, 19);
-	timeStopper.active = true;
-	timeStopper.pos = { posx, posy };
+	if (!timeStopper.active)
+	{
+		short posx = randrange(1, 28) * 2;
+		short posy = randrange(1, 19);
+		timeStopper.active = true;
+		timeStopper.pos = { posx, posy };
+	}
 }
-int dropTime = 3000; //300000
+int dropTime = 60000; 
 int currentDropTime = 0;
 void item_droper()
 {
@@ -440,7 +443,7 @@ void item_droper()
 	if (currentDropTime >= dropTime)
 	{
 		currentDropTime -= dropTime;
-		dropTime = randrange(30, 60) * 1000;
+		dropTime = randrange(60, 120) * 1000;
 		dropItem();
 	}
 }
@@ -633,9 +636,14 @@ int main()
 			delete[] eventBuffer;
 		}
 		// Update part
-		plane_spawner();
-		item_droper();
-		flyPlane();
+		if (freezedTime > 0)
+			freezedTime -= dt;
+		if (freezedTime <= 0)
+		{
+			plane_spawner();
+			item_droper();
+			flyPlane();
+		}
 		// Drawing part
 		clear_console();
 		draw_console(
@@ -666,7 +674,11 @@ int main()
 		draw_console(cmd, { 9,21 }, 10);
 		if (timeStopper.active)
 		{
-			draw_console("&", timeStopper.pos, 7);
+			draw_console("&", timeStopper.pos, 175);
+		}
+		if (freezedTime > 0)
+		{
+			draw_console("Time Stopped!", { 0, 22 }, 12);
 		}
 		for (int i = 0; i < 26; i++)
 		{
