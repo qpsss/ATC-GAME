@@ -1,20 +1,43 @@
 #pragma once
 #include "game.h"
 
+bool displayMenu = true;
 void menuInput(const char* input)
 {
 	if (input[0] == '/' && input[1] == 'p')
 	{
+		gameReset();
 		runGame = true;
 	}
 	else if (input[0] == '/' && input[1] == 'e')
 	{
 		play = false;
 	}
+	else if (input[0] == '/' && input[1] == 's')
+	{
+		displayMenu = false;
+	}
+	else if (input[0] == '/' && input[1] == 'm')
+	{
+		displayMenu = true;
+	}
 	else
 	{
 		return;
 	}
+}
+
+char username[17] = "";
+int score = 0;
+char scoreStr[11] = "";
+void readScore()
+{
+	FILE* fp;
+	fp = fopen("scoreRecord.txt", "r");
+	fscanf(fp, "%s,%d\n", &username, &score);
+	fclose(fp);
+	//_itoa_s(score, scoreStr, 10);
+	//scoreStr[0] = (score % 10) + '0';
 }
 
 void menuUpdate()
@@ -40,7 +63,18 @@ void menuUpdate()
 
 void menuRender()
 {
-	draw_console(menu, { 0,0 }, 10);
-	gotoxy(9 + strlen(cmd), 21);
-	draw_console(cmd, { 9,21 }, 10);
+	if (displayMenu)
+	{
+		draw_console(menu, { 0,0 }, 10);
+		gotoxy(9 + strlen(cmd), 21);
+		draw_console(cmd, { 9,21 }, 10);
+	}
+	else
+	{
+		draw_console(scoreboard, { 0,0 }, 10);
+		draw_console(username, { 7,3 }, 10);
+		//draw_console(scoreStr, { 10,3 }, 10);
+		gotoxy(9 + strlen(cmd), 21);
+		draw_console(cmd, { 9,21 }, 10);
+	}
 }

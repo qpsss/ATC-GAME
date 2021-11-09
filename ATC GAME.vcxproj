@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="menu.txt" />
+    <Text Include="scoreRecord.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asciiart.h" />

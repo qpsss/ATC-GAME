@@ -23,6 +23,9 @@
     <Text Include="menu.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="scoreRecord.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asciiart.h">

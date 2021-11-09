@@ -16,6 +16,7 @@ int main()
 		else
 		{
 			menuUpdate();
+			readScore();
 			menuRender();
 		}
 		display_console();

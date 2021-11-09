@@ -13,6 +13,7 @@
 #define dt 100
 bool play = true;
 unsigned int safe = 0;
+bool runGame = false;
 
 int randrange(int start, int stop)
 {
@@ -252,7 +253,8 @@ void spawn_plane()
 					if (index == 0)
 					{
 						jet_count--;
-						init_plane(jet + i, E_Point[point], dir, dest);
+						COORD spawn_point = { E_Point[point].X + dir.X, E_Point[point].Y + dir.Y };
+						init_plane(jet + i, spawn_point, dir, dest);
 						jet[i].active = true;
 					}
 				}
@@ -270,8 +272,8 @@ void isCollided()
 			{
 				if (i != j && airliner[j].active)
 				{
-					bool diffX = abs(airliner[i].pos.X - airliner[j].pos.X) < 4;
-					bool diffY = abs(airliner[i].pos.Y - airliner[j].pos.Y) < 3;
+					bool diffX = abs(airliner[i].pos.X - airliner[j].pos.X) < 3;
+					bool diffY = abs(airliner[i].pos.Y - airliner[j].pos.Y) < 2;
 					bool diffAl = abs(airliner[i].altitude - airliner[j].altitude) < 3;
 					if (diffX && diffY && diffAl)
 					{
@@ -289,8 +291,8 @@ void isCollided()
 			{
 				if (i != j && jet[j].active)
 				{
-					bool diffX = abs(airliner[i].pos.X - jet[j].pos.X) < 4;
-					bool diffY = abs(airliner[i].pos.Y - jet[j].pos.Y) < 3;
+					bool diffX = abs(airliner[i].pos.X - jet[j].pos.X) < 3;
+					bool diffY = abs(airliner[i].pos.Y - jet[j].pos.Y) < 2;
 					bool diffAl = abs(airliner[i].altitude - jet[j].altitude) < 3;
 					if (diffX && diffY && diffAl)
 					{
@@ -308,8 +310,8 @@ void isCollided()
 			{
 				if (i != j && jet[j].active)
 				{
-					bool diffX = abs(jet[i].pos.X - jet[j].pos.X) < 4;
-					bool diffY = abs(jet[i].pos.Y - jet[j].pos.Y) < 3;
+					bool diffX = abs(jet[i].pos.X - jet[j].pos.X) < 3;
+					bool diffY = abs(jet[i].pos.Y - jet[j].pos.Y) < 2;
 					bool diffAl = abs(jet[i].altitude - jet[j].altitude) < 3;
 					if (diffX && diffY && diffAl)
 					{
@@ -437,7 +439,7 @@ void dropItem()
 		timeStopper.pos = { posx, posy };
 	}
 }
-int dropTime = 60000;
+int dropTime = 300000;
 int currentDropTime = 0;
 void item_droper()
 {
@@ -449,16 +451,60 @@ void item_droper()
 		dropItem();
 	}
 }
+
+void gameReset()
+{
+	inGameTime = 0;
+	safe = 0;
+	airliner_count = 26;
+	jet_count = 26;
+	freezedTime = 0;
+	currentDropTime = 0;
+	currentSpawnTime = 0;
+	spawnTime = 3000;
+	currentTime = 0;
+	timeStopper.active = false;
+	for (int i = 0; i < 26; i++)
+	{
+		init_plane(airliner + i, { 0,0 }, { 0,0 }, 0, 'A' + i, 7, 'A');
+		airliner[i].active = false;
+		init_plane(jet + i, { 0,0 }, { 0,0 }, 0, 'a' + i, 7, 'J');
+		jet[i].active = false;
+	}
+}
+
 int planeColor = 160;
 COORD beacon_points[] = { COORD({24,7}), COORD({24,17}) };
 void processCommand(const char* input)
 {
 	Plane* plane;
+	int cmdlen = strlen(input);
 	if (input[0] == '/' && input[1] == 'e')
 	{
 		play = false;
 	}
-	int cmdlen = strlen(input);
+	else if (input[0] == '/' && input[1] == 's')
+	{
+		FILE* fp;
+		char username[17];
+		for (int i = 3; i < cmdlen; i++)
+		{
+			username[i - 3] = input[i];
+		}
+		username[cmdlen - 3] = '\0';
+		int score = safe;
+		fp = fopen("scoreRecord.txt", "a");
+		fprintf(fp, "%s,%d\n", username, score);
+		fclose(fp);
+	}
+	else if (input[0] == '/' && input[1] == 'm')
+	{
+		runGame = false;
+	}
+	else if (input[0] == '/' && input[1] == 'r')
+	{
+		gameReset();
+	}
 	if (cmdlen < 3)
 	{
 		return;
@@ -606,7 +652,7 @@ void displayInfo()
 
 DWORD numEvents = 0;
 DWORD numEventsRead = 0;
-bool runGame = false;
+
 
 void gameUpdate()
 {
@@ -669,9 +715,4 @@ void gameRender()
 		}
 	}
 	displayInfo();
-}
-
-void gameReset()
-{
-
 }
