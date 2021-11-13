@@ -20,6 +20,7 @@ void menuInput(const char* input)
 	else if (input[0] == '/' && input[1] == 'm')
 	{
 		displayMenu = true;
+		gotoScoreboard = false;
 	}
 	else
 	{
@@ -91,14 +92,6 @@ void readSortedRec()
 	totalRec = i - 1;
 	fclose(fp);
 }
-/*void readScore()
-{
-	FILE* fp;
-	fp = fopen("scoreRecord.txt", "r");
-	fscanf(fp, "%s , %d", &username, &score);
-	fclose(fp);
-	_itoa_s(score, scoreStr, 10);
-}*/
 
 void menuUpdate()
 {

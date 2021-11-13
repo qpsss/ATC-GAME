@@ -10,8 +10,20 @@ int main()
 		clear_console();
 		if (runGame)
 		{
-			gameUpdate();
-			gameRender();
+			if (loseGame)
+			{
+				loseUpdate();
+				loseRender();
+				if (gotoScoreboard)
+				{
+					displayMenu = false;
+				}
+			}
+			else
+			{
+				gameUpdate();
+				gameRender();
+			}
 		}
 		else
 		{

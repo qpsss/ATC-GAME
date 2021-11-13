@@ -8,12 +8,16 @@
 #include <string>
 #include <string.h>
 #include "asciiart.h"
+
 #define screen_x 85 //85
-#define screen_y 30 //22
+#define screen_y 24 //24
 #define dt 100
+
 bool play = true;
 unsigned int safe = 0;
 bool runGame = false;
+bool loseGame = false;
+bool gotoScoreboard = false;
 
 int randrange(int start, int stop)
 {
@@ -87,9 +91,12 @@ void draw_console(const char* str, COORD pos, short color = 7)
 }
 
 long inGameTime = 0;
-void displayTime()
+void displayTime(int colorTime)
 {
-	inGameTime += dt;
+	if (!loseGame)
+	{
+		inGameTime += dt;
+	}
 	char draw_time[10] = "";
 	if ((inGameTime) / 1000 <= 60)
 	{
@@ -115,16 +122,16 @@ void displayTime()
 		draw_time[6] = '0' + (inGameTime / 10000) % 6;
 		draw_time[7] = '0' + (inGameTime / 1000) % 10;
 	}
-	draw_console(draw_time, { 67,0 }, 10);
+	draw_console(draw_time, { 67,0 }, colorTime);
 }
 
 #pragma endregion
 
 #pragma region command
-char cmd[15];
+char cmd[22];
 void clear_command()
 {
-	strcpy_s(cmd, 15, ""); //Copies one string to another
+	strcpy_s(cmd, 22, ""); //Copies one string to another
 }
 bool type_command(char ch, WORD vkCode)
 {
@@ -139,7 +146,7 @@ bool type_command(char ch, WORD vkCode)
 			cmd[strlen(cmd) - 1] = '\0';
 		}
 	}
-	else if (strlen(cmd) < 14 && isprint(ch))
+	else if (strlen(cmd) < 21 && isprint(ch))
 	{
 		strncat_s(cmd, &ch, 1); //Concatenates a certain amount of characters of two strings
 	}
@@ -277,7 +284,7 @@ void isCollided()
 					bool diffAl = abs(airliner[i].altitude - airliner[j].altitude) < 3;
 					if (diffX && diffY && diffAl)
 					{
-						play = false;
+						loseGame = true;
 					}
 				}
 			}
@@ -296,7 +303,7 @@ void isCollided()
 					bool diffAl = abs(airliner[i].altitude - jet[j].altitude) < 3;
 					if (diffX && diffY && diffAl)
 					{
-						play = false;
+						loseGame = true;;
 					}
 				}
 			}
@@ -315,7 +322,7 @@ void isCollided()
 					bool diffAl = abs(jet[i].altitude - jet[j].altitude) < 3;
 					if (diffX && diffY && diffAl)
 					{
-						play = false;
+						loseGame = true;;
 					}
 				}
 			}
@@ -367,7 +374,7 @@ void plane_update(Plane* plane)
 		}
 		else
 		{
-			play = false;
+			loseGame = true;;
 		}
 	}
 	if (plane->altitude == 0)
@@ -382,7 +389,7 @@ void plane_update(Plane* plane)
 		}
 		else
 		{
-			play = false;
+			loseGame = true;;
 		}
 	}
 	if (plane->pos.X == timeStopper.pos.X && plane->pos.Y == timeStopper.pos.Y && timeStopper.active)
@@ -464,6 +471,7 @@ void gameReset()
 	spawnTime = 3000;
 	currentTime = 0;
 	timeStopper.active = false;
+	loseGame = false;
 	for (int i = 0; i < 26; i++)
 	{
 		init_plane(airliner + i, { 0,0 }, { 0,0 }, 0, 'A' + i, 7, 'A');
@@ -483,23 +491,26 @@ void processCommand(const char* input)
 	{
 		play = false;
 	}
-	else if (input[0] == '/' && input[1] == 's')
+	else if (input[0] == '/' && input[1] == 's' && loseGame)
 	{
 		FILE* fp;
 		char username[14];
-		for (int i = 3; i < cmdlen; i++)
+		for (int i = 6; i < cmdlen; i++)
 		{
-			username[i - 3] = input[i];
+			username[i - 6] = input[i];
 		}
-		username[cmdlen - 3] = '\0';
+		username[cmdlen - 6] = '\0';
 		int score = safe;
 		fp = fopen("scoreRecord.txt", "a");
 		fprintf(fp, "%s , %d\n", username, score);
 		fclose(fp);
+		gotoScoreboard = true;
+		runGame = false;
 	}
 	else if (input[0] == '/' && input[1] == 'm')
 	{
 		runGame = false;
+		loseGame = false;
 	}
 	else if (input[0] == '/' && input[1] == 'r')
 	{
@@ -583,7 +594,7 @@ void processCommand(const char* input)
 	}
 }
 
-void displayPlaneDestination()
+void displayPlaneDestination(int colorDest)
 {
 	COORD posN = { 61,3 };
 	COORD posE = { 70,3 };
@@ -594,21 +605,21 @@ void displayPlaneDestination()
 			char displayName[3] = "";
 			displayName[0] = airliner[i].name;
 			displayName[1] = '0' + airliner[i].altitude;
-			draw_console(displayName, posN, 10);
+			draw_console(displayName, posN, colorDest);
 			posN.Y++;
 
 			if (airliner[i].dest < 8)
 			{
 				char displayExit[3] = "E0";
 				displayExit[1] += airliner[i].dest;
-				draw_console(displayExit, posE, 10);
+				draw_console(displayExit, posE, colorDest);
 				posE.Y++;
 			}
 			else
 			{
 				char displayExit[3] = "A0";
 				displayExit[1] += airliner[i].dest - 8;
-				draw_console(displayExit, posE, 10);
+				draw_console(displayExit, posE, colorDest);
 				posE.Y++;
 			}
 		}
@@ -620,34 +631,34 @@ void displayPlaneDestination()
 			char displayName[3] = "";
 			displayName[0] = jet[i].name;
 			displayName[1] = '0' + jet[i].altitude;
-			draw_console(displayName, posN, 10);
+			draw_console(displayName, posN, colorDest);
 			posN.Y++;
 
 			if (jet[i].dest < 8)
 			{
 				char displayExit[3] = "E0";
 				displayExit[1] += jet[i].dest;
-				draw_console(displayExit, posE, 10);
+				draw_console(displayExit, posE, colorDest);
 				posE.Y++;
 			}
 			else
 			{
 				char displayExit[3] = "A0";
 				displayExit[1] += jet[i].dest - 8;
-				draw_console(displayExit, posE, 10);
+				draw_console(displayExit, posE, colorDest);
 				posE.Y++;
 			}
 		}
 	}
 }
-void displayInfo()
+void displayInfo(int infoColor)
 {
-	displayTime();
-	displayPlaneDestination();
+	displayTime(infoColor);
+	displayPlaneDestination(infoColor);
 
 	char safeStr[11];
-	_itoa_s(safe, safeStr, 10);
-	draw_console(safeStr, { 67, 1 }, 10);
+	_itoa_s(safe, safeStr, infoColor);
+	draw_console(safeStr, { 67, 1 }, infoColor);
 }
 
 DWORD numEvents = 0;
@@ -685,11 +696,13 @@ void gameUpdate()
 	}
 }
 
+int gameColor = 10;
 void gameRender()
 {
-	draw_console(map, { 0,0 }, 10);
+	planeColor = 160;
+	draw_console(map, { 0,0 }, gameColor);
 	gotoxy(9 + strlen(cmd), 21);
-	draw_console(cmd, { 9,21 }, 10);
+	draw_console(cmd, { 9,21 }, gameColor);
 	if (timeStopper.active)
 	{
 		draw_console("&", timeStopper.pos, 175);
@@ -714,5 +727,59 @@ void gameRender()
 			draw_console(displayName, jet[i].pos, planeColor);
 		}
 	}
-	displayInfo();
+	displayInfo(10);
+}
+
+void loseRender()
+{
+	draw_console(loseMap, { 0,0 }, 12);
+	gotoxy(9 + strlen(cmd), 21);
+	draw_console(cmd, { 9,21 }, 12);
+	planeColor = 192;
+	for (int i = 0; i < 26; i++)
+	{
+		char displayName[3] = "";
+		if (airliner[i].active)
+		{
+			displayName[0] = airliner[i].name;
+			displayName[1] = '0' + airliner[i].altitude;
+			draw_console(displayName, airliner[i].pos, planeColor);
+		}
+		if (jet[i].active)
+		{
+			displayName[0] = jet[i].name;
+			displayName[1] = '0' + jet[i].altitude;
+			draw_console(displayName, jet[i].pos, planeColor);
+		}
+	}
+	if (timeStopper.active)
+	{
+		draw_console("&", timeStopper.pos, 207);
+	}
+	if (freezedTime > 0)
+	{
+		draw_console("Time Stopped!", { 0, 22 }, 12);
+	}
+	displayInfo(12);
+}
+
+void loseUpdate()
+{
+	GetNumberOfConsoleInputEvents(console.rHnd, &numEvents);
+	if (numEvents != 0) {
+		INPUT_RECORD* eventBuffer = new INPUT_RECORD[numEvents];
+		ReadConsoleInput(console.rHnd, eventBuffer, numEvents, &numEventsRead);
+		for (DWORD i = 0; i < numEventsRead && i < numEvents; ++i)
+		{
+			if (eventBuffer[i].EventType == KEY_EVENT && eventBuffer[i].Event.KeyEvent.bKeyDown == true)
+			{
+				if (type_command(eventBuffer[i].Event.KeyEvent.uChar.AsciiChar, eventBuffer[i].Event.KeyEvent.wVirtualKeyCode))
+				{
+					processCommand(cmd);
+					clear_command();
+				}
+			}
+		}
+		delete[] eventBuffer;
+	}
 }
