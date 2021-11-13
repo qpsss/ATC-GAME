@@ -144,6 +144,7 @@
   <ItemGroup>
     <Text Include="menu.txt" />
     <Text Include="scoreRecord.txt" />
+    <Text Include="sortedScore.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asciiart.h" />

@@ -26,6 +26,9 @@
     <Text Include="scoreRecord.txt">
       <Filter>Source Files</Filter>
     </Text>
+    <Text Include="sortedScore.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asciiart.h">

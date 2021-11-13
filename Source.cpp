@@ -16,7 +16,9 @@ int main()
 		else
 		{
 			menuUpdate();
-			readScore();
+			readRecord();
+			sortRecord();
+			readSortedRec();
 			menuRender();
 		}
 		display_console();

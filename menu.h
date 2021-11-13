@@ -27,18 +27,78 @@ void menuInput(const char* input)
 	}
 }
 
-char username[17] = "";
-int score = 0;
+struct Player
+{
+	char username[14];
+	int score;
+};
+Player player[100];
+int totalRec = 0;
 char scoreStr[11] = "";
-void readScore()
+
+void readRecord()
 {
 	FILE* fp;
 	fp = fopen("scoreRecord.txt", "r");
-	fscanf(fp, "%s,%d\n", &username, &score);
+	int i = 0;
+	while (!feof(fp))
+	{
+		fscanf(fp, "%s , %d", &player[i].username, &player[i].score);
+		i++;
+	}
+	totalRec = i - 1;
 	fclose(fp);
-	//_itoa_s(score, scoreStr, 10);
-	//scoreStr[0] = (score % 10) + '0';
 }
+
+void sortRecord()
+{
+	int i, j, tempScore;
+	char tempName[14] = "";
+	for (i = 0; i < totalRec; i++)
+	{
+		for (j = i + 1; j < totalRec; j++)
+		{
+			if (player[i].score < player[j].score)
+			{
+				tempScore = player[i].score;
+				strcpy_s(tempName, 14, player[i].username);
+				player[i].score = player[j].score;
+				strcpy_s(player[i].username, 14, player[j].username);
+				player[j].score = tempScore;
+				strcpy_s(player[j].username, 14, tempName);
+			}
+		}
+	}
+	FILE* fp;
+	fp = fopen("sortedScore.txt", "w");
+	for (int i = 0; i < totalRec; i++)
+	{
+		fprintf(fp, "%s , %d\n", player[i].username, player[i].score);
+	}
+	fclose(fp);
+}
+
+void readSortedRec()
+{
+	FILE* fp;
+	fp = fopen("sortedScore.txt", "r");
+	int i = 0;
+	while (!feof(fp))
+	{
+		fscanf(fp, "%s , %d", &player[i].username, &player[i].score);
+		i++;
+	}
+	totalRec = i - 1;
+	fclose(fp);
+}
+/*void readScore()
+{
+	FILE* fp;
+	fp = fopen("scoreRecord.txt", "r");
+	fscanf(fp, "%s , %d", &username, &score);
+	fclose(fp);
+	_itoa_s(score, scoreStr, 10);
+}*/
 
 void menuUpdate()
 {
@@ -72,8 +132,14 @@ void menuRender()
 	else
 	{
 		draw_console(scoreboard, { 0,0 }, 10);
-		draw_console(username, { 7,3 }, 10);
-		//draw_console(scoreStr, { 10,3 }, 10);
+		short posy = 3;
+		for (int i = 0; i < 9; i++)
+		{
+			draw_console(player[i].username, { 7,posy }, 10);
+			_itoa_s(player[i].score, scoreStr, 10);
+			draw_console(scoreStr, {21,posy}, 10);
+			posy += 2;
+		}
 		gotoxy(9 + strlen(cmd), 21);
 		draw_console(cmd, { 9,21 }, 10);
 	}

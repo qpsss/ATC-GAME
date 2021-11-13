@@ -486,7 +486,7 @@ void processCommand(const char* input)
 	else if (input[0] == '/' && input[1] == 's')
 	{
 		FILE* fp;
-		char username[17];
+		char username[14];
 		for (int i = 3; i < cmdlen; i++)
 		{
 			username[i - 3] = input[i];
@@ -494,7 +494,7 @@ void processCommand(const char* input)
 		username[cmdlen - 3] = '\0';
 		int score = safe;
 		fp = fopen("scoreRecord.txt", "a");
-		fprintf(fp, "%s,%d\n", username, score);
+		fprintf(fp, "%s , %d\n", username, score);
 		fclose(fp);
 	}
 	else if (input[0] == '/' && input[1] == 'm')

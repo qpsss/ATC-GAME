@@ -1,9 +1,9 @@
-don , 3
-pear , 7
 taylor , 22
 dylan , 17
-saddie , 0
 j , 16
+ten , 10
+pear , 7
+don , 3
 1 , 0
 2 , 0
 3 , 0
@@ -13,4 +13,4 @@ j , 16
 7 , 0
 8 , 0
 nine , 0
-ten , 10
+saddie , 0
