@@ -374,7 +374,7 @@ void plane_update(Plane* plane)
 		}
 		else
 		{
-			loseGame = true;;
+			loseGame = true;
 		}
 	}
 	if (plane->altitude == 0)
@@ -657,7 +657,7 @@ void displayInfo(int infoColor)
 	displayPlaneDestination(infoColor);
 
 	char safeStr[11];
-	_itoa_s(safe, safeStr, infoColor);
+	_itoa_s(safe, safeStr, 10);
 	draw_console(safeStr, { 67, 1 }, infoColor);
 }
 

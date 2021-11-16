@@ -1,6 +1,3 @@
-don , 3
-pear , 7
-taylor , 22
-dylan , 17
-saddie , 0
-gfdsaqwq , 0
+pear , 14
+Sanfong , 11
+p , 5
