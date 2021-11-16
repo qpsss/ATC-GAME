@@ -118,20 +118,43 @@ void menuRender()
 {
 	if (displayMenu)
 	{
-		draw_console(menu, { 0,0 }, 10);
+		/*draw_console(fakemap, {0,0}, 10);
+		draw_console("p7", {6,7}, 160);
+		draw_console("E9", { 38,10 }, 160);
+		draw_console("a2", {24,6}, 160);
+		draw_console("R7", { 8,15 }, 160);
+		draw_console("&", { 16,18 }, 175);*/
+		draw_console(menu, {0,0}, 10);
+		draw_console("/play      ", {68,11}, 160);
+		draw_console("/scoreboard", { 68,12 }, 160);
+		draw_console("/exit      ", {68,13}, 160);
 		gotoxy(9 + strlen(cmd), 21);
 		draw_console(cmd, { 9,21 }, 10);
 	}
 	else
 	{
 		draw_console(scoreboard, { 0,0 }, 10);
+		draw_console("    SCOREBOARD                                                                               ", { 0,1 }, 160);
 		short posy = 3;
-		for (int i = 0; i < 9; i++)
+		if (totalRec < 9)
 		{
-			draw_console(player[i].username, { 7,posy }, 10);
-			_itoa_s(player[i].score, scoreStr, 10);
-			draw_console(scoreStr, {21,posy}, 10);
-			posy += 2;
+			for (int i = 0; i < totalRec; i++)
+			{
+				draw_console(player[i].username, { 7,posy }, 10);
+				_itoa_s(player[i].score, scoreStr, 10);
+				draw_console(scoreStr, { 21,posy }, 10);
+				posy += 2;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < 9; i++)
+			{
+				draw_console(player[i].username, { 7,posy }, 10);
+				_itoa_s(player[i].score, scoreStr, 10);
+				draw_console(scoreStr, { 21,posy }, 10);
+				posy += 2;
+			}
 		}
 		gotoxy(9 + strlen(cmd), 21);
 		draw_console(cmd, { 9,21 }, 10);

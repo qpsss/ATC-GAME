@@ -281,7 +281,7 @@ void isCollided()
 				{
 					bool diffX = abs(airliner[i].pos.X - airliner[j].pos.X) < 3;
 					bool diffY = abs(airliner[i].pos.Y - airliner[j].pos.Y) < 2;
-					bool diffAl = abs(airliner[i].altitude - airliner[j].altitude) < 3;
+					bool diffAl = abs(airliner[i].altitude - airliner[j].altitude) < 2;
 					if (diffX && diffY && diffAl)
 					{
 						loseGame = true;
@@ -300,7 +300,7 @@ void isCollided()
 				{
 					bool diffX = abs(airliner[i].pos.X - jet[j].pos.X) < 3;
 					bool diffY = abs(airliner[i].pos.Y - jet[j].pos.Y) < 2;
-					bool diffAl = abs(airliner[i].altitude - jet[j].altitude) < 3;
+					bool diffAl = abs(airliner[i].altitude - jet[j].altitude) < 2;
 					if (diffX && diffY && diffAl)
 					{
 						loseGame = true;;
@@ -319,7 +319,7 @@ void isCollided()
 				{
 					bool diffX = abs(jet[i].pos.X - jet[j].pos.X) < 3;
 					bool diffY = abs(jet[i].pos.Y - jet[j].pos.Y) < 2;
-					bool diffAl = abs(jet[i].altitude - jet[j].altitude) < 3;
+					bool diffAl = abs(jet[i].altitude - jet[j].altitude) < 2;
 					if (diffX && diffY && diffAl)
 					{
 						loseGame = true;;
@@ -430,7 +430,7 @@ void plane_spawner()
 	if (currentSpawnTime >= spawnTime)
 	{
 		currentSpawnTime -= spawnTime;
-		spawnTime = randrange(10, 100) * 1000;
+		spawnTime = randrange(0, 100) * 1000;
 		spawn_plane();
 	}
 }
@@ -480,7 +480,7 @@ void gameReset()
 		jet[i].active = false;
 	}
 }
-
+char displayCmd[100];
 int planeColor = 160;
 COORD beacon_points[] = { COORD({24,7}), COORD({24,17}) };
 void processCommand(const char* input)
