@@ -427,11 +427,41 @@ int spawnTime = 3000;
 void plane_spawner()
 {
 	currentSpawnTime += dt;
-	if (currentSpawnTime >= spawnTime)
+	if (inGameTime < 300000)
 	{
-		currentSpawnTime -= spawnTime;
-		spawnTime = randrange(0, 100) * 1000;
-		spawn_plane();
+		if (currentSpawnTime >= spawnTime)
+		{
+			currentSpawnTime -= spawnTime;
+			spawnTime = randrange(0, 100) * 1000;
+			spawn_plane();
+		}
+	}
+	else if (inGameTime < 600000)
+	{
+		if (currentSpawnTime >= spawnTime)
+		{
+			currentSpawnTime -= spawnTime;
+			spawnTime = randrange(0, 80) * 1000;
+			spawn_plane();
+		}
+	}
+	else if (inGameTime < 9000000)
+	{
+		if (currentSpawnTime >= spawnTime)
+		{
+			currentSpawnTime -= spawnTime;
+			spawnTime = randrange(0, 60) * 1000;
+			spawn_plane();
+		}
+	}
+	else
+	{
+		if (currentSpawnTime >= spawnTime)
+		{
+			currentSpawnTime -= spawnTime;
+			spawnTime = randrange(0, 40) * 1000;
+			spawn_plane();
+		}
 	}
 }
 #pragma endregion
