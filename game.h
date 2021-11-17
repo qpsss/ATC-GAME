@@ -432,7 +432,7 @@ void plane_spawner()
 		if (currentSpawnTime >= spawnTime)
 		{
 			currentSpawnTime -= spawnTime;
-			spawnTime = randrange(0, 100) * 1000;
+			spawnTime = randrange(0, 80) * 1000;
 			spawn_plane();
 		}
 	}
@@ -441,11 +441,11 @@ void plane_spawner()
 		if (currentSpawnTime >= spawnTime)
 		{
 			currentSpawnTime -= spawnTime;
-			spawnTime = randrange(0, 80) * 1000;
+			spawnTime = randrange(0, 70) * 1000;
 			spawn_plane();
 		}
 	}
-	else if (inGameTime < 9000000)
+	else if (inGameTime < 900000)
 	{
 		if (currentSpawnTime >= spawnTime)
 		{
